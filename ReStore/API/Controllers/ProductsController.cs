@@ -1,46 +1,40 @@
-using API.Data;
-using API.Entities;
+using API.Helper;
+using API.Helper.Constants;
+using API.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+
+    public class ProductsController : BaseApiController
     {
-        private readonly StoreContext _storeContext;
-        public ProductsController(StoreContext storeContext)
+        private readonly IProductService _productService;
+        private readonly ILogger<ProductsController> _logger;
+        public ProductsController(IProductService productService, ILogger<ProductsController> logger)
         {
-            _storeContext = storeContext;
+            _productService = productService;
+            _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        [HttpGet("get")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Get()
         {
-            try
-            {
-                return Ok(await _storeContext.Products.ToListAsync());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                return StatusCode(500, "An error occurred while retrieving products.");
-            }
+            return ResponseHandler.CreateResponse(await _productService.Get());
         }
 
-    [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct(int id)
+        [HttpGet("get/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                return Ok(await _storeContext.Products.FirstOrDefaultAsync(x=>x.Id==id));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                return StatusCode(500, "An error occurred while retrieving products.");
-            }
+
+            if (id == 0)
+                return ResponseHandler.CreateResponse(ResponseVM.InvalidRequest(MessageConstants.InvalidValue));
+
+            return ResponseHandler.CreateResponse(await _productService.Get(id));
         }
     }
 }
