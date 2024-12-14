@@ -14,20 +14,7 @@ namespace API.Helper
             this.Message = message;
             this.Response = response;
         }
-        public static ResponseVM Success(string message, dynamic response)
-        {
-            return new ResponseVM(true, StatusCodes.Status200OK, message, response ?? new { });
-        }
-
-        // Static method for error response
-        public static ResponseVM InternalServerError(string message)
-        {
-            return new ResponseVM(true, StatusCodes.Status500InternalServerError, message, new { });
-        }
-        public static ResponseVM NoContentFound(string message)
-        {
-            return new ResponseVM(true, StatusCodes.Status204NoContent, message, new List<object>());
-        }
+     
         public static ResponseVM InvalidRequest(string errorMessage)
         {
             return new ResponseVM(true, StatusCodes.Status400BadRequest, errorMessage, null);

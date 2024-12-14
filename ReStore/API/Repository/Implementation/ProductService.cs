@@ -11,9 +11,11 @@ namespace API.Repository.Implementation
     public class ProductService : IProductService
     {
         private readonly StoreContext _storeContext;
-        public ProductService(StoreContext storeContext)
+        private readonly IResponseService _responseService;
+        public ProductService(StoreContext storeContext, IResponseService responseService)
         {
             _storeContext = storeContext;
+            _responseService = responseService;
         }
         public Task<ResponseVM> Add(ProductVM model)
         {
@@ -24,38 +26,27 @@ namespace API.Repository.Implementation
         {
             throw new NotImplementedException();
         }
-/// <summary>
-/// 
-/// </summary>
-/// <returns></returns>
+        /// <summary>
+        /// Return All prodcct List
+        /// </summary>
+        /// <returns></returns>
         public async Task<ResponseVM> Get()
         {
-            try
-            {
-                var productList=await _storeContext.Products.ToListAsync();
-                return ResponseVM.Success(MessageConstants.Success,productList);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return ResponseVM.InternalServerError(MessageConstants.Error);
-            }
+
+            var productList = await _storeContext.Products.ToListAsync();
+            return _responseService.Success(MessageConstants.Success, productList);
+
         }
 
         public async Task<ResponseVM> Get(int id)
         {
-           try
-            {
-                Product product=await _storeContext.Products.FirstOrDefaultAsync(x=>x.Id==id);
-                if(product is null) ResponseVM.NoContentFound(MessageConstants.NoDataFound);
 
-                return ResponseVM.Success(MessageConstants.Success,product);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return ResponseVM.InternalServerError(MessageConstants.Error);
-            }
+            Product product = await _storeContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (product is null)
+                return _responseService.NoContentFound(MessageConstants.NoDataFound);
+
+            return _responseService.Success(MessageConstants.Success, product);
+
         }
 
         public Task<ResponseVM> Update(int id, ProductVM model)

@@ -17,34 +17,24 @@ namespace API.Controllers
         }
 
         [HttpGet("get")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                var result = await _productService.Get();
-                return ResponseHandler.CreateResponse(result);
-            }
-            catch (Exception ex)
-            {
-                return ResponseHandler.HandleException(ex, _logger);
-            }
+            return ResponseHandler.CreateResponse(await _productService.Get());
         }
 
         [HttpGet("get/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                if (id == 0)
-                    return ResponseHandler.CreateResponse(ResponseVM.InvalidRequest(MessageConstants.InvalidValue));
 
-                var result = await _productService.Get(id);
-                return ResponseHandler.CreateResponse(result);
-            }
-            catch (Exception ex)
-            {
-                return ResponseHandler.HandleException(ex, _logger);
-            }
+            if (id == 0)
+                return ResponseHandler.CreateResponse(ResponseVM.InvalidRequest(MessageConstants.InvalidValue));
+
+            return ResponseHandler.CreateResponse(await _productService.Get(id));
         }
     }
 }

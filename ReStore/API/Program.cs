@@ -17,6 +17,7 @@ builder.Services.AddDbContext<StoreContext>(opt=>{
 builder.Services.AddCors();
 
 builder.Services.AddScoped<IProductService,ProductService>();
+builder.Services.AddScoped<IResponseService,ResponseService>();
 
 var app = builder.Build();
 
