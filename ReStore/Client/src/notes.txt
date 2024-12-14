@@ -13,3 +13,11 @@ Intercepter
    npm install react-router-dom
 
 2) Axios
+
+----------------
+Error Handling
+Developer Exception Page 
+Middleware
+Http Response Errors
+Client Side Error Handling 
+Debugging
