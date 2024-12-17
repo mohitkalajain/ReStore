@@ -8,10 +8,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Product } from "../../app/models/product";
+import agent from "../../app/api/agent";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -20,21 +21,23 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/products/get/${id}`)
-      .then((response) => {
-        if (response.data.flag && response.data.statusCode === 200) {
-          console.log("Product Details:", response.data.response);
-          setProduct(response.data.response);
-        } else {
-          console.error("Error:", response.data.message);
-        }
-      })
-      .catch((error) => console.log(error))
+    const parsedId = parseInt(id ?? "0");
+    agent.Catalog.details(parsedId)
+    .then((response) => {
+      if (response.data.flag && response.data.statusCode === 200) {
+        console.log("Product Details:", response.data.response);
+        setProduct(response.data.response);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    })
+    .catch((error) => console.log(error.response))
       .finally(() => setLoading(false));
+    
+      
   }, [id]);
 
-  if (loading) return <h3>Loading . . .</h3>;
+  if (loading) return <LoadingComponent message="Loading product . . ."/>
 
   if (!product) return <h3>Product not found</h3>;
 

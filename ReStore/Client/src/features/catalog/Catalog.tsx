@@ -1,15 +1,14 @@
-import axios from "axios";
 import { Product } from "../../app/models/product";
 import ProductList from "./ProductList";
 import { useState, useEffect } from "react";
+import agent from "../../app/api/agent";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-
-    axios
-      .get(`http://localhost:5000/api/products/get`)
+    agent.Catalog.list()
       .then((response) => {
         if (response.data.flag && response.data.statusCode === 200) {
           console.log("Product Details:", response.data.response);
@@ -20,11 +19,9 @@ export default function Catalog() {
       })
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
-
   }, []);
 
-  if (loading) return <h3>Loading . . .</h3>;
-  
+  if (loading) return <LoadingComponent message="Loading products ..." />;
   return (
     <>
       <ProductList products={products}></ProductList>
